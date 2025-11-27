@@ -1,7 +1,10 @@
+/* admin-web/app/globals.css */
 @import "tailwindcss";
-@import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* Opcional: animaciones si usas tw-animate-css */
+
+
+@layer base {
 
 :root {
   --background: oklch(1 0 0);
@@ -144,4 +147,5 @@
   body {
     @apply bg-background text-foreground;
   }
+}
 }

@@ -4,8 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Building2 } from "lucide-react"
 
 export default function AdminLogin() {
@@ -21,7 +19,8 @@ export default function AdminLogin() {
     setLoading(true)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+      console.log(process.env.NEXT_PUBLIC_API_URL)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, role: "admin" }),
@@ -62,7 +61,7 @@ export default function AdminLogin() {
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
               </label>
-              <Input
+              <input
                 id="email"
                 type="email"
                 value={email}
@@ -77,7 +76,7 @@ export default function AdminLogin() {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Contraseña
               </label>
-              <Input
+              <input
                 id="password"
                 type="password"
                 value={password}
@@ -89,9 +88,9 @@ export default function AdminLogin() {
             </div>
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full bg-green-600 hover:bg-green-700">
+          <button type="submit" disabled={loading} className="w-full bg-green-600 hover:bg-green-700">
             {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
-          </Button>
+          </button>
 
           <div className="rounded-lg bg-gray-50 p-4 text-xs text-gray-600">
             <p className="font-semibold">Credenciales de prueba:</p>
