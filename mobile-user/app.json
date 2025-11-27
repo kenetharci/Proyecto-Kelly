@@ -4,10 +4,10 @@
     "slug": "urbana-reporta-user",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./app/assets/usuario.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": ".app/assets/usuario.png",
       "resizeMode": "contain",
       "backgroundColor": "#16a34a"
     },
