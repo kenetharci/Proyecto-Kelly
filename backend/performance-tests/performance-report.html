@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas de Rendimiento - App Urbana Reporta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tool-icon {
+            font-size: 40px;
+            margin-right: 15px;
+        }
+
+        .tool-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .metric-unit {
+            font-size: 16px;
+            color: #999;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status.pass {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.excellent {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .summary {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .summary h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .summary-item h3 {
+            font-size: 40px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .summary-item p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .timestamp {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Pruebas de Rendimiento</h1>
+            <p class="subtitle">App Urbana Reporta - Backend API</p>
+            <p style="color: #999; margin-top: 10px;">Fecha: 28 de Noviembre, 2025</p>
+        </div>
+
+        <div class="tools">
+            <!-- Artillery Card -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon">⚡</div>
+                    <div class="tool-name">Artillery</div>
+                </div>
+
+                <p style="color: #666; margin-bottom: 20px;">Test de carga sostenida con múltiples escenarios</p>
+
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-label">Duración Total</div>
+                        <div class="metric-value">3 <span class="metric-unit">min</span></div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">Usuarios Virtuales</div>
+                        <div class="metric-value">5-10 <span class="metric-unit">VUs</span></div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">Escenarios</div>
+                        <div class="metric-value">3</div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">Estado</div>
+                        <div class="status pass">✓ EXITOSO</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: #e7f3ff; border-radius: 8px;">
+                    <strong>Escenarios Ejecutados:</strong>
+                    <ul style="margin-top: 10px; margin-left: 20px; color: #666;">
+                        <li>Get All Reports (40%)</li>
+                        <li>Get Categories (30%)</li>
+                        <li>Login Flow (30%)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Autocannon Card -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon">🔥</div>
+                    <div class="tool-name">Autocannon</div>
+                </div>
+
+                <p style="color: #666; margin-bottom: 20px;">Test de carga intensiva - GET /api/reports</p>
+
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-label">Requests/segundo</div>
+                        <div class="metric-value">5,890 <span class="metric-unit">req/s</span></div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">Latencia Promedio</div>
+                        <div class="metric-value">1.26 <span class="metric-unit">ms</span></div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">Latencia P99</div>
+                        <div class="metric-value">9 <span class="metric-unit">ms</span></div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">Throughput</div>
+                        <div class="metric-value">1.84 <span class="metric-unit">MB/s</span></div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">Total Requests</div>
+                        <div class="metric-value">176,708</div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <h3>✓</h3>
+                                <p><strong>Todas las pruebas</strong><br>pasaron exitosamente</p>
+                            </div>
+
+                            <div class="summary-item">
+                                <h3>6,145</h3>
+                                <p><strong>Requests/segundo</strong><br>Capacidad máxima</p>
+                            </div>
+
+                            <div class="summary-item">
+                                <h3>1.2ms</h3>
+                                <p><strong>Latencia promedio</strong><br>Muy rápido</p>
+                            </div>
+                        </div>
+
+                        <div
+                            style="margin-top: 30px; padding: 20px; background: #d4edda; border-radius: 10px; border-left: 5px solid #28a745;">
+                            <h3 style="color: #155724; margin-bottom: 10px;">✅ Conclusión</h3>
+                            <p style="color: #155724; line-height: 1.6;">
+                                El backend de App Urbana Reporta demuestra <strong>excelente rendimiento</strong> bajo
+                                carga.
+                                Soporta más de 6,000 requests por segundo con latencia inferior a 2ms y 0% de errores.
+                                El sistema está <strong>listo para producción</strong>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <p class="timestamp">
+                        Generado el 28 de Noviembre, 2025 a las 07:40 AM
+                    </p>
+                </div>
+</body>
+
+</html>

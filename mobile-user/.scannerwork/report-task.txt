@@ -1,0 +1,6 @@
+projectKey=AppUrbanaReporta-MobileUser
+serverUrl=http://localhost:9000
+serverVersion=25.10.0.114319
+dashboardUrl=http://localhost:9000/dashboard?id=AppUrbanaReporta-MobileUser
+ceTaskId=b079d4fa-b0ef-4524-96c9-6ecad78c9998
+ceTaskUrl=http://localhost:9000/api/ce/task?id=b079d4fa-b0ef-4524-96c9-6ecad78c9998

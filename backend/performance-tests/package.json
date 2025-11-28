@@ -1,0 +1,15 @@
+{
+    "name": "performance-tests",
+    "version": "1.0.0",
+    "description": "Performance tests for Backend API",
+    "scripts": {
+        "test:load:artillery": "artillery run performance-tests/artillery/load-test.yml",
+        "test:stress:artillery": "artillery run performance-tests/artillery/stress-test.yml",
+        "test:load:autocannon": "node performance-tests/autocannon/load-test.js",
+        "test:stress:autocannon": "node performance-tests/autocannon/stress-test.js",
+        "test:all": "npm run test:load:artillery && npm run test:stress:artillery && npm run test:load:autocannon && npm run test:stress:autocannon"
+    },
+    "dependencies": {
+        "autocannon": "^7.15.0"
+    }
+}
