@@ -1,9 +1,11 @@
 import { Router } from "express"
 import { PostgresUserRepository } from "../../repositories/PostgresUserRepository"
 import { authMiddleware, adminMiddleware, type AuthRequest } from "../middleware/authMiddleware"
+import { AuthService } from "../../adapters/AuthService"
 
 const router = Router()
 const userRepository = new PostgresUserRepository()
+const authService = new AuthService()
 
 router.get("/", authMiddleware, adminMiddleware, async (req, res) => {
   try {
@@ -11,6 +13,39 @@ router.get("/", authMiddleware, adminMiddleware, async (req, res) => {
     const usersWithoutPassword = users.map(({ password, ...user }) => user)
     res.json(usersWithoutPassword)
   } catch (error) {
+    res.status(500).json({ error: "Internal server error" })
+  }
+})
+
+router.post("/", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { email, password, name, phone, role } = req.body
+
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: "Email, password and name are required" })
+    }
+
+    const existingUser = await userRepository.findByEmail(email)
+    if (existingUser) {
+      return res.status(409).json({ error: "User already exists" })
+    }
+
+    const hashedPassword = await authService.hashPassword(password)
+
+    const newUser = await userRepository.create({
+      email,
+      password: hashedPassword,
+      name,
+      phone: phone || "",
+      role: role || "user",
+      avatarUrl: undefined,
+      notificationsEnabled: true
+    })
+
+    const { password: _, ...userWithoutPassword } = newUser
+    res.status(201).json(userWithoutPassword)
+  } catch (error) {
+    console.error("Error creating user:", error)
     res.status(500).json({ error: "Internal server error" })
   }
 })

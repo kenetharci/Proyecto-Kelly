@@ -2,8 +2,8 @@ export interface Comment {
   id: string
   reportId: string
   userId: string
-  userName: string
-  message: string
+  userName?: string
+  content: string
   isAdmin: boolean
   createdAt: Date
 }
@@ -11,7 +11,6 @@ export interface Comment {
 export interface CreateCommentDTO {
   reportId: string
   userId: string
-  userName: string
-  message: string
+  content: string
   isAdmin: boolean
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { AlertTriangle, CheckCircle, Clock, Users, TrendingUp, MapPin, LogOut } from "lucide-react"
+import { AlertTriangle, CheckCircle, Clock, Users, TrendingUp, MapPin, LogOut, UserPlus } from "lucide-react"
 import { Card } from "@/components/Card"
 
 interface Stats {
@@ -11,6 +11,7 @@ interface Stats {
   approvedReports: number
   rejectedReports: number
   totalUsers: number
+  usersToday: number
   reportsToday: number
 }
 
@@ -22,6 +23,7 @@ export default function AdminDashboard() {
     approvedReports: 0,
     rejectedReports: 0,
     totalUsers: 0,
+    usersToday: 0,
     reportsToday: 0,
   })
   const [loading, setLoading] = useState(true)
@@ -39,13 +41,62 @@ export default function AdminDashboard() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reports/stats`, {
+
+      // Fetch all reports
+      const reportsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/reports`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        setStats(data)
+      if (reportsResponse.ok) {
+        const reports = await reportsResponse.json()
+
+        // Calculate stats from reports
+        const totalReports = reports.length
+        const pendingReports = reports.filter((r: any) => r.status === "pending").length
+        const approvedReports = reports.filter((r: any) => r.status === "resolved").length
+        const rejectedReports = reports.filter((r: any) => r.status === "rejected").length
+
+        // Fetch users count
+        const usersResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/users`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        let totalUsers = 0
+        let usersToday = 0
+        if (usersResponse.ok) {
+          const users = await usersResponse.json()
+          totalUsers = users.length
+
+          // Calculate users registered today
+          const today = new Date()
+          today.setHours(0, 0, 0, 0)
+          usersToday = users.filter((u: any) => {
+            const userDate = new Date(u.created_at)
+            userDate.setHours(0, 0, 0, 0)
+            return userDate.getTime() === today.getTime()
+          }).length
+        }
+
+        // Calculate reports today
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const reportsToday = reports.filter((r: any) => {
+          const reportDate = new Date(r.created_at)
+          reportDate.setHours(0, 0, 0, 0)
+          return reportDate.getTime() === today.getTime()
+        }).length
+
+        setStats({
+          totalReports,
+          pendingReports,
+          approvedReports,
+          rejectedReports,
+          totalUsers,
+          usersToday,
+          reportsToday,
+        })
+      } else {
+        console.error("Failed to fetch reports:", reportsResponse.status)
       }
     } catch (error) {
       console.error("Error fetching stats:", error)
@@ -90,7 +141,10 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Card className="p-6">
+          <Card
+            className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push("/reports?filter=all")}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Reportes Totales</p>
@@ -102,7 +156,10 @@ export default function AdminDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card
+            className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push("/reports?filter=pending")}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Pendientes</p>
@@ -114,7 +171,10 @@ export default function AdminDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card
+            className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push("/reports?filter=resolved")}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Aprobados</p>
@@ -126,7 +186,10 @@ export default function AdminDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card
+            className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push("/reports?filter=rejected")}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Rechazados</p>
@@ -138,7 +201,10 @@ export default function AdminDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card
+            className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push("/users")}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Usuarios Registrados</p>
@@ -147,6 +213,10 @@ export default function AdminDashboard() {
               <div className="rounded-full bg-purple-100 p-3">
                 <Users className="h-6 w-6 text-purple-600" />
               </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-gray-600">
+              <span className="text-green-600 font-medium">+{stats.usersToday}</span>
+              <span className="ml-2">hoy</span>
             </div>
           </Card>
 

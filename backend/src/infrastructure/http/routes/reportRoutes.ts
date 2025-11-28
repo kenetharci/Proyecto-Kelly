@@ -21,7 +21,8 @@ router.post("/", authMiddleware, async (req: AuthRequest, res) => {
     })
     res.status(201).json(report)
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" })
+    console.error("Error creating report:", error)
+    res.status(500).json({ error: "Internal server error", details: error instanceof Error ? error.message : "Unknown error" })
   }
 })
 

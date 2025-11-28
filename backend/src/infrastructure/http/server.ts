@@ -1,11 +1,13 @@
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
+import path from "path"
 import authRoutes from "./routes/authRoutes"
 import reportRoutes from "./routes/reportRoutes"
 import userRoutes from "./routes/userRoutes"
 import commentRoutes from "./routes/commentRoutes"
 import categoryRoutes from "./routes/categoryRoutes"
+import uploadRoutes from "./routes/uploadRoutes"
 import { testConnection } from "../database/connection"
 
 dotenv.config()
@@ -31,6 +33,10 @@ app.use("/api/reports", reportRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/comments", commentRoutes)
 app.use("/api/categories", categoryRoutes)
+app.use("/api/upload", uploadRoutes)
+
+// Serve uploaded files statically
+app.use("/uploads", express.static(path.join(__dirname, "../../../uploads")))
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "Urban Report API is running" })
