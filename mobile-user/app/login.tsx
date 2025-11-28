@@ -12,7 +12,7 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const API_URL = Constants.expoConfig?.extra?.apiUrl || "http://localhost:3000"
+  const API_URL = Constants.expoConfig?.extra?.apiUrl || "http://192.168.20.56:3000"
 
   const handleLogin = async () => {
     if (!email || !password) {

@@ -1,11 +1,80 @@
 "use client"
 
+import { useState, useCallback } from "react"
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native"
-import { useRouter } from "expo-router"
+import { useRouter, useFocusEffect } from "expo-router"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Plus, AlertTriangle, Lightbulb, Trash2, Shield } from "lucide-react-native"
+import Constants from "expo-constants"
 
 export default function Home() {
   const router = useRouter()
+  const [stats, setStats] = useState({ created: 0, resolved: 0 })
+  const [userName, setUserName] = useState("")
+
+  const API_URL = Constants.expoConfig?.extra?.apiUrl || "http://192.168.20.56:3000"
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchStats()
+    }, [])
+  )
+
+  const fetchStats = async () => {
+    try {
+      const userStr = await AsyncStorage.getItem("user")
+      const token = await AsyncStorage.getItem("token")
+
+      if (userStr) {
+        const user = JSON.parse(userStr)
+        setUserName(user.name || "Usuario")
+
+        // Fetch reports from backend
+        const response = await fetch(`${API_URL}/api/reports`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        if (response.ok) {
+          const reports = await response.json()
+
+          // Calculate stats from backend data
+          const created = reports.length
+          const resolved = reports.filter((r: any) => r.status === "resolved").length
+
+          setStats({ created, resolved })
+        } else {
+          // Fallback to AsyncStorage if backend fails
+          const reportsStr = await AsyncStorage.getItem(`reports_${user.id}`)
+          if (reportsStr) {
+            const reports = JSON.parse(reportsStr)
+            const created = reports.length
+            const resolved = reports.filter((r: any) => r.status === "resolved").length
+            setStats({ created, resolved })
+          } else {
+            setStats({ created: 0, resolved: 0 })
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching stats:", error)
+      // Try to load from AsyncStorage as fallback
+      try {
+        const userStr = await AsyncStorage.getItem("user")
+        if (userStr) {
+          const user = JSON.parse(userStr)
+          const reportsStr = await AsyncStorage.getItem(`reports_${user.id}`)
+          if (reportsStr) {
+            const reports = JSON.parse(reportsStr)
+            const created = reports.length
+            const resolved = reports.filter((r: any) => r.status === "resolved").length
+            setStats({ created, resolved })
+          }
+        }
+      } catch (fallbackError) {
+        console.error("Fallback error:", fallbackError)
+      }
+    }
+  }
 
   const categories = [
     { id: 1, name: "Basura", icon: Trash2, color: "#ef4444" },
@@ -18,7 +87,7 @@ export default function Home() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>App Urbana Reporta</Text>
-        <Text style={styles.subtitle}>Ayuda a mejorar tu ciudad</Text>
+        <Text style={styles.subtitle}>Hola, {userName}</Text>
       </View>
 
       <ScrollView style={styles.content}>
@@ -47,14 +116,20 @@ export default function Home() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Estadísticas</Text>
           <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>12</Text>
+            <TouchableOpacity
+              style={styles.statCard}
+              onPress={() => router.push({ pathname: "/(tabs)/reports", params: { filter: "all" } })}
+            >
+              <Text style={styles.statValue}>{stats.created}</Text>
               <Text style={styles.statLabel}>Reportes creados</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>8</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.statCard}
+              onPress={() => router.push({ pathname: "/(tabs)/reports", params: { filter: "resolved" } })}
+            >
+              <Text style={styles.statValue}>{stats.resolved}</Text>
               <Text style={styles.statLabel}>Resueltos</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

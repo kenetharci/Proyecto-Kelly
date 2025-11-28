@@ -1,34 +1,45 @@
 export interface Report {
   id: string
   userId: string
+  categoryId: string
   title: string
   description: string
-  category: string
   status: "pending" | "in_progress" | "resolved" | "rejected"
   priority: "low" | "medium" | "high"
   latitude: number
   longitude: number
   address: string
-  photos: string[]
+  imageUrls: string[]
+  contactName?: string
+  contactEmail?: string
+  contactPhone?: string
+  userName?: string
+  categoryName?: string
+  adminNotes?: string
+  resolvedAt?: Date
   createdAt: Date
   updatedAt: Date
 }
 
 export interface CreateReportDTO {
   userId: string
+  categoryId: string
   title: string
   description: string
-  category: string
   latitude: number
   longitude: number
   address: string
-  photos?: string[]
+  imageUrls?: string[]
+  contactName?: string
+  contactEmail?: string
+  contactPhone?: string
 }
 
 export interface UpdateReportDTO {
   title?: string
   description?: string
-  category?: string
+  categoryId?: string
   status?: "pending" | "in_progress" | "resolved" | "rejected"
   priority?: "low" | "medium" | "high"
+  adminNotes?: string
 }

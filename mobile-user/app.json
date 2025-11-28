@@ -3,11 +3,14 @@
     "name": "App Urbana Reporta",
     "slug": "urbana-reporta-user",
     "version": "1.0.0",
+    "extra": {
+      "apiUrl": "http://192.168.20.56:3000"
+    },
     "orientation": "portrait",
-    "icon": "./app/assets/usuario.png",
+    "icon": "./assets/usuario.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": ".app/assets/usuario.png",
+      "image": "./assets/usuario.png",
       "resizeMode": "contain",
       "backgroundColor": "#16a34a"
     },

@@ -5,6 +5,8 @@ export interface User {
   name: string
   phone: string
   role: "user" | "admin"
+  avatarUrl?: string
+  notificationsEnabled?: boolean
   createdAt: Date
   updatedAt: Date
 }
@@ -15,6 +17,8 @@ export interface CreateUserDTO {
   name: string
   phone: string
   role?: "user" | "admin"
+  avatarUrl?: string
+  notificationsEnabled?: boolean
 }
 
 export interface UpdateUserDTO {

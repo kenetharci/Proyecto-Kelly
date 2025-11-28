@@ -4,7 +4,13 @@ import type { IReportRepository } from "../../domain/ports/IReportRepository"
 
 export class PostgresReportRepository implements IReportRepository {
   async findById(id: string): Promise<Report | null> {
-    const result = await pool.query("SELECT * FROM reports WHERE id = $1", [id])
+    const result = await pool.query(`
+      SELECT r.*, u.name as user_name, c.name as category_name 
+      FROM reports r
+      LEFT JOIN users u ON r.user_id = u.id
+      LEFT JOIN categories c ON r.category_id = c.id
+      WHERE r.id = $1
+    `, [id])
 
     if (result.rows.length === 0) return null
 
@@ -12,50 +18,72 @@ export class PostgresReportRepository implements IReportRepository {
   }
 
   async findAll(filters?: { status?: string; categoryId?: string; userId?: string }): Promise<Report[]> {
-    let query = "SELECT * FROM reports WHERE 1=1"
+    let query = `
+      SELECT r.*, u.name as user_name, c.name as category_name 
+      FROM reports r
+      LEFT JOIN users u ON r.user_id = u.id
+      LEFT JOIN categories c ON r.category_id = c.id
+      WHERE 1=1
+    `
     const values: any[] = []
     let paramCount = 1
 
     if (filters?.status) {
-      query += ` AND status = $${paramCount++}`
+      query += ` AND r.status = $${paramCount++}`
       values.push(filters.status)
     }
     if (filters?.categoryId) {
-      query += ` AND category_id = $${paramCount++}`
+      query += ` AND r.category_id = $${paramCount++}`
       values.push(filters.categoryId)
     }
     if (filters?.userId) {
-      query += ` AND user_id = $${paramCount++}`
+      query += ` AND r.user_id = $${paramCount++}`
       values.push(filters.userId)
     }
 
-    query += " ORDER BY created_at DESC"
+    query += " ORDER BY r.created_at DESC"
 
     const result = await pool.query(query, values)
     return result.rows.map((row) => this.mapRowToReport(row))
   }
 
-  async create(report: Omit<Report, "id" | "createdAt" | "updatedAt">): Promise<Report> {
-    const result = await pool.query(
-      `INSERT INTO reports (user_id, category_id, title, description, address, latitude, longitude, status, priority, image_urls, admin_notes)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-       RETURNING *`,
-      [
-        report.userId,
-        report.categoryId,
-        report.title,
-        report.description,
-        report.address,
-        report.latitude,
-        report.longitude,
-        report.status || "pending",
-        report.priority || "medium",
-        report.imageUrls || [],
-        report.adminNotes || null,
-      ],
-    )
+  async findByUserId(userId: string): Promise<Report[]> {
+    return this.findAll({ userId })
+  }
 
-    return this.mapRowToReport(result.rows[0])
+  async findByStatus(status: string): Promise<Report[]> {
+    return this.findAll({ status })
+  }
+
+  async create(report: Omit<Report, "id" | "createdAt" | "updatedAt">): Promise<Report> {
+    try {
+      const result = await pool.query(
+        `INSERT INTO reports (user_id, category_id, title, description, address, latitude, longitude, status, priority, image_urls, contact_name, contact_email, contact_phone, admin_notes)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+         RETURNING *`,
+        [
+          report.userId,
+          report.categoryId,
+          report.title,
+          report.description,
+          report.address,
+          report.latitude,
+          report.longitude,
+          report.status || "pending",
+          report.priority || "medium",
+          report.imageUrls || [],
+          report.contactName,
+          report.contactEmail,
+          report.contactPhone,
+          report.adminNotes || null,
+        ],
+      )
+
+      return this.mapRowToReport(result.rows[0])
+    } catch (error) {
+      console.error("Database error creating report:", error)
+      throw error
+    }
   }
 
   async update(id: string, data: Partial<Report>): Promise<Report | null> {
@@ -97,7 +125,9 @@ export class PostgresReportRepository implements IReportRepository {
     )
 
     if (result.rows.length === 0) return null
-    return this.mapRowToReport(result.rows[0])
+
+    // Fetch again to get joined fields
+    return this.findById(id)
   }
 
   async delete(id: string): Promise<boolean> {
@@ -137,6 +167,11 @@ export class PostgresReportRepository implements IReportRepository {
       status: row.status,
       priority: row.priority,
       imageUrls: row.image_urls || [],
+      contactName: row.contact_name,
+      contactEmail: row.contact_email,
+      contactPhone: row.contact_phone,
+      userName: row.user_name,
+      categoryName: row.category_name,
       adminNotes: row.admin_notes,
       resolvedAt: row.resolved_at,
       createdAt: row.created_at,

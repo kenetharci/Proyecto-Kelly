@@ -18,15 +18,14 @@ router.post("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const { reportId, message } = req.body
 
-    if (!reportId || !message) {
-      return res.status(400).json({ error: "Report ID and message are required" })
+    if (!reportId || (!message && !req.body.content)) {
+      return res.status(400).json({ error: "Report ID and message/content are required" })
     }
 
     const comment = await commentRepository.create({
       reportId,
       userId: req.user!.userId,
-      userName: "User",
-      message,
+      content: message || req.body.content, // Handle both message and content
       isAdmin: req.user!.role === "admin",
     })
 

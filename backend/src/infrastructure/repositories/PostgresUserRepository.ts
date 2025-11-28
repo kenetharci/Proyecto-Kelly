@@ -1,5 +1,5 @@
 import pool from "../database/connection"
-import type { User } from "../../domain/entities/User"
+import type { User, CreateUserDTO } from "../../domain/entities/User"
 import type { IUserRepository } from "../../domain/ports/IUserRepository"
 
 export class PostgresUserRepository implements IUserRepository {
@@ -19,6 +19,7 @@ export class PostgresUserRepository implements IUserRepository {
       avatarUrl: row.avatar_url,
       notificationsEnabled: row.notifications_enabled,
       createdAt: row.created_at,
+      updatedAt: row.updated_at,
     }
   }
 
@@ -38,6 +39,7 @@ export class PostgresUserRepository implements IUserRepository {
       avatarUrl: row.avatar_url,
       notificationsEnabled: row.notifications_enabled,
       createdAt: row.created_at,
+      updatedAt: row.updated_at,
     }
   }
 
@@ -54,10 +56,11 @@ export class PostgresUserRepository implements IUserRepository {
       avatarUrl: row.avatar_url,
       notificationsEnabled: row.notifications_enabled,
       createdAt: row.created_at,
+      updatedAt: row.updated_at,
     }))
   }
 
-  async create(user: Omit<User, "id" | "createdAt">): Promise<User> {
+  async create(user: CreateUserDTO): Promise<User> {
     const result = await pool.query(
       `INSERT INTO users (name, email, password, phone, role, avatar_url, notifications_enabled)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -84,6 +87,7 @@ export class PostgresUserRepository implements IUserRepository {
       avatarUrl: row.avatar_url,
       notificationsEnabled: row.notifications_enabled,
       createdAt: row.created_at,
+      updatedAt: row.updated_at,
     }
   }
 
@@ -143,6 +147,7 @@ export class PostgresUserRepository implements IUserRepository {
       avatarUrl: row.avatar_url,
       notificationsEnabled: row.notifications_enabled,
       createdAt: row.created_at,
+      updatedAt: row.updated_at,
     }
   }
 

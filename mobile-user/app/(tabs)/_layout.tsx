@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router"
-import { Home, MapPin, FileText, User } from "lucide-react-native"
+import { Home, MapPin, FileText, User, PlusCircle } from "lucide-react-native"
 
 export default function TabLayout() {
   return (
@@ -22,6 +22,14 @@ export default function TabLayout() {
         options={{
           title: "Mapa",
           tabBarIcon: ({ color }) => <MapPin size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="create-report"
+        options={{
+          title: "Reportar",
+          tabBarIcon: ({ color }) => <PlusCircle size={24} color={color} />,
+          href: "/create-report",
         }}
       />
       <Tabs.Screen
